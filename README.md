@@ -127,3 +127,104 @@ Last name:
 
 
 商店
+是####8月6号 SQL概览
+
+了解了一些SQL方面的基础知识为下面的网站制作提供基础
+
+######什么是sql
+> SQL 是structured query language 的缩写结构话查询语言，我的理解就是这是一种能够组织数据并能够提供检索的语言
+
+下面是一些基本的语法
+> 搜索
+```sql
+/* SELECT prod_name, vend_id
+FROM Products; */
+SELECT prod_name
+FROM Products;
+```
+>排序
+```sql
+SELECT prod_id, prod_price, prod_name
+FROM Products
+ORDER BY prod_price DESC, prod_name;
+```
+> 过滤
+```sql
+SELECT prod_name, prod_price
+FROM Products
+WHERE prod_price < 10;
+```
+> 通配符过滤
+```sql
+SELECT cust_contact
+ FROM Customers
+WHERE cust_contact LIKE '[^JM]%' ORDER BY cuts_contact
+ ```
+>汇总数据 主要有5种方式
+```
+AVG()    返回某列的平均值 
+COUNT() 返回某列的行数 
+MAX()     返回某列的最大值 
+MIN()      返回某列的最小值 
+ SUM()     返回某列值之和
+```
+>分组数据
+```sql
+SELECT vend_id, COUNT(*) AS num_prods
+FROM Products 
+GROUP BY vend_id;
+```
+ 
+
+
+ ####8月6号 SQL概览
+
+了解了一些SQL方面的基础知识为下面的网站制作提供基础
+
+######什么是sql
+> SQL 是structured query language 的缩写结构话查询语言，我的理解就是这是一种能够组织数据并能够提供检索的语言
+
+下面是一些基本的语法
+> 搜索
+```sql
+/* SELECT prod_name, vend_id
+FROM Products; */
+SELECT prod_name
+FROM Products;
+```
+>排序
+```sql
+SELECT prod_id, prod_price, prod_name
+FROM Products
+ORDER BY prod_price DESC, prod_name;
+```
+> 过滤
+```sql
+SELECT prod_name, prod_price
+FROM Products
+WHERE prod_price < 10;
+```
+> 通配符过滤
+```sql
+SELECT cust_contact
+ FROM Customers
+WHERE cust_contact LIKE '[^JM]%' ORDER BY cuts_contact
+ ```
+>汇总数据 主要有5种方式
+```
+AVG()    返回某列的平均值 
+COUNT() 返回某列的行数 
+MAX()     返回某列的最大值 
+MIN()      返回某列的最小值 
+ SUM()     返回某列值之和
+```
+>分组数据
+```sql
+SELECT vend_id, COUNT(*) AS num_prods
+FROM Products 
+GROUP BY vend_id;
+```
+ 
+
+
+ 
