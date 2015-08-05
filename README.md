@@ -32,9 +32,8 @@ a doc which will be recode my niubi`s life
 > 下面的课程我要做的比教授的还要好，必须改进，这是一个好的开始
 
 #####7/27总结
->从头开始再次回头看这个幻灯片制作，本质上就是将图片出现以及隐藏的两种状态用css分别表现出来
-```css
-.show{
+dsdsad```css
+.show{#sdsdalkas
     display:show
 }
 .notshow{
