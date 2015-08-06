@@ -126,9 +126,12 @@ Last name:
 
 
 
-商店
-是####8月6号 SQL概览
+ 
 
+
+#8月6号 SQL概览
+
+------
 了解了一些SQL方面的基础知识为下面的网站制作提供基础
 
 ######什么是sql
@@ -175,56 +178,57 @@ FROM Products
 GROUP BY vend_id;
 ```
  
+#Flask
+
+------
+主要学习了flask中数据库如何配置，第一次学习的时候就躺在这里了就没有学，现在回头来看看还是存在感觉很吃力，感到吃力的原因是
+> 1 数据库配置比较麻烦
+> 2 数据库本身很多概念不清楚
+> 3 中间层SQLAlchemy还是很复杂
+记得之前光配置数据库就搞来好几天，然后就不想弄了，后面也就放弃了，这次再试一试吧
+
+#####配置数据库创建SQL文件
+```sql
+drop table if exists entries;
+create table entries (
+  id integer primary key autoincrement,
+  title string not null,
+  text string not null
+);
+```
+>这个模式包含一个名为 entries 的表，该表中的每行都包含一个 id 、一个 title 和一个 text 。 id 是一个自增的整数，也是主键；其余的两个是字符串，且不允许为空。
+
+#####数据库相关操作
+>连接数据库
+```python
+def connect_db():
+    """Connects to the specific database."""
+    rv = sqlite3.connect(app.config['DATABASE'])
+    rv.row_factory = sqlite3.Row
+    return rv
+```
+>初始化数据库
+```python
+def init_db():
+    with app.app_context():
+        db = get_db()
+        with app.open_resource('schema.sql', mode='r') as f:
+            db.cursor().executescript(f.read())
+        db.commit()
+```
+
+问题来了get_db()这个函数不是内置的也没有定义我怎么都初始化不成功，今天继续摸索吧，还是对数据库存在再一种恐惧感，总觉得很难
 
 
- ####8月6号 SQL概览
 
-了解了一些SQL方面的基础知识为下面的网站制作提供基础
 
-######什么是sql
-> SQL 是structured query language 的缩写结构话查询语言，我的理解就是这是一种能够组织数据并能够提供检索的语言
 
-下面是一些基本的语法
-> 搜索
-```sql
-/* SELECT prod_name, vend_id
-FROM Products; */
-SELECT prod_name
-FROM Products;
-```
->排序
-```sql
-SELECT prod_id, prod_price, prod_name
-FROM Products
-ORDER BY prod_price DESC, prod_name;
-```
-> 过滤
-```sql
-SELECT prod_name, prod_price
-FROM Products
-WHERE prod_price < 10;
-```
-> 通配符过滤
-```sql
-SELECT cust_contact
- FROM Customers
-WHERE cust_contact LIKE '[^JM]%' ORDER BY cuts_contact
- ```
->汇总数据 主要有5种方式
-```
-AVG()    返回某列的平均值 
-COUNT() 返回某列的行数 
-MAX()     返回某列的最大值 
-MIN()      返回某列的最小值 
- SUM()     返回某列值之和
-```
->分组数据
-```sql
-SELECT vend_id, COUNT(*) AS num_prods
-FROM Products 
-GROUP BY vend_id;
-```
- 
+
+
+
+
+
+
 
 
  
