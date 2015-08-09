@@ -343,6 +343,41 @@ if __name__ == '__main__':
 下面就以这个demo为例逐一解决上诉问题
 
 ######数据库相关知识
+首先分别利用`init_db`和`connect_db`来初始化数据库，这里面有两个数据库文件一个`flasker.db`和`schema.sql`我不是很明白，教程上说
+>关系型数据库需要一个数据库模式来定义如何储存信息，因此必须在第一次运行服务器前创建数据库模式
+
+*这里我明天看一下Django里面是如何设置设数据库的*<br \>
+demo里面用到的
+>取值
+```sql
+select title, text from entries order by id desc
+```
+
+>插入
+```sql
+insert into entries (title, text) values (?, ?)',
+                 [request.form['title'], request.form['text']]
+```
+
+关闭以及更新都在`init_db`这个函数里面，主要是运用了`with`语句<br \>
+>	上下文管理器(context manager)是Python2.5开始支持的一种语法，用于规定某个对象的使用范围。一旦进入或者离开该使用范围，会有特殊操作被调用 (比如为对象分配或者释放内存)。它的语法形式是with...as...
+
+当我们不需要数据库时它会自动关闭
+
+######request对象
+request对象主要是指http的请求,我以为会是一个字典，或者是一个json对象但实际上print出来却是
+```python
+request
+<Request 'http://127.0.0.1:5000/login' [POST]>
+request.form
+ImmutableMultiDict([('username', u'admin'), ('password', u'default')])
+type(request)
+<class 'werkzeug.local.LocalProxy'>
+```
+原来request是一个class，好吧接下去就去研究request类，结果发现需要研究setter与getattr的用法
+
+#####setter与getattr
+
 
 
 
