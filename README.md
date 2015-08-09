@@ -338,9 +338,9 @@ if __name__ == '__main__':
 > * app.config配置包含哪些东西
 > * jinja模版的基本用法
 > * g 对象是什么东西，原理是什么，是否跟pyhton中的上下文有关系，例如with
-> * session 是什么zhe
+> * session 是什么东东
 
-下面就以这个demo为例逐一解决上诉问题
+下面就以这个demo为例逐一解决上述问题
 
 ######数据库相关知识
 首先分别利用`init_db`和`connect_db`来初始化数据库，这里面有两个数据库文件一个`flasker.db`和`schema.sql`我不是很明白，教程上说
