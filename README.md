@@ -240,7 +240,109 @@ DNS服务器构成一个分级(hierarchical)的树状体系。上图中，每个
 
 我之所以会挂是因为我电脑进不去apple store 所以我将DNS 改为114.114.114.114 ，因为苹果的服务器是在美国的所以这个域名能够帮助为定位到苹果的服务器的ip所在的DNS缓存服务器，而我在图书馆用i－shanghai无线是用的是中国电信的服务器。一般网络供应商（ISP）会提供动态DNS供人们使用，而我设置了静态的DNS帮助我快速定位到苹果的服务器ip，如果两者在一个域里面，我是都可以快速的访问的，但他们不在一个域，而我的DNS定向的指向了查找苹果的服务器ipDNS服务器，根本就找不到存储中国电信的服务器的ip的DNS服务器，因此解析不出来中国电信的ip，没有ip就肯定无法访问网页了。
 
+#8月9号
 
+------
+这两天参照教程写了一个小demo发现有如下的点需要我一个一个攻破，熟悉这几个点后相信我就可以对Flask有更深入的理解了
+```python
+import os
+import sqlite3
+from flask import Flask, request, g, redirect, url_for, abort, \
+    render_template, flash, session
+
+# configuration
+DATABASE = '/tmp/flasker.db'
+DEBUG = True
+SECRET_KEY = 'developement key'
+USERNAME = 'admin'
+PASSWORD = 'default'
+
+# create our little application :)
+app = Flask(__name__)
+app.config.from_object(__name__)
+
+def connect_db():
+    return sqlite3.connect(app.config['DATABASE'])
+
+# init database
+from contextlib import closing
+
+def init_db():
+    with closing(connect_db()) as db:
+        with app.open_resource('schema.sql', mode='r') as f:
+            db.cursor().executescript(f.read())
+        db.commit()
+
+
+@app.before_request
+def before_request():
+    g.db = connect_db()
+
+
+@app.teardown_request
+def teardown_request(exception):
+    db = getattr(g, 'db', None)
+    if db is not None:
+        db.close()
+    g.db.close()
+
+
+@app.route('/')
+def show_entries():
+    cur = g.db.execute('select title, text from entries order by id desc')
+    entries = [dict(title=row[0], text=row[1]) for row in cur.fetchall()]
+    return render_template('show_entries.html', entries=entries)
+
+
+@app.route('/add', methods=['POST'])
+def add_entry():
+    if not session.get('logged_in'):
+        abort(401)
+    g.db.execute('insert into entries (title, text) values (?, ?)',
+                 [request.form['title'], request.form['text']])
+    g.db.commit()
+    flash('New entry was successfully posted')
+    return redirect(url_for('show_entries'))
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    error = None
+    print request.form
+    if request.method == 'POST':
+        if request.form['username'] != app.config['USERNAME']:
+            error = 'Invalid username'
+        elif request.form['password'] != app.config['PASSWORD']:
+            error = 'Invalid password'
+        else:
+            session['logged_in'] = True
+            flash('You were logged in')
+            return redirect(url_for('show_entries'))
+    return render_template('login.html', error=error)
+
+
+@app.route('/logout')
+def logout():
+    session.pop('logged_in', None)
+    flash('You were logged out')
+    return redirect(url_for('show_entries'))
+
+
+if __name__ == '__main__':
+    app.run()
+```
+
+
+> * 数据库的建立，连接，取值，存储，关闭，更新
+> * request 对象除了http相关信息还包含哪些信息
+> * app.config配置包含哪些东西
+> * jinja模版的基本用法
+> * g 对象是什么东西，原理是什么，是否跟pyhton中的上下文有关系，例如with
+> * session 是什么zhe
+
+下面就以这个demo为例逐一解决上诉问题
+
+######数据库相关知识
 
 
 
