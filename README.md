@@ -376,7 +376,79 @@ type(request)
 ```
 原来request是一个class，好吧接下去就去研究request类，结果发现需要研究setter与getattr的用法
 
-#####setter与getattr
+#8月11号
+
+------
+#####`___setter___与___getattr___`
+本质上属于运算符重载，运算法重载在类方法中拦截了python原有的内置操作，重载有几个关键概念：
+> * 运算符重载让类拦截常规的Python运算。
+> * 类可重载所有Python表达式运算符。
+> * 类也可重载打印、函数调用、属性点号运算等内置运算。
+> * 重载使类实例的行为像内置类型。
+> * 重载是通过提供特殊名称的类方法来实现的。
+
+
+
+> `___getattr___` <br \> 
+> 重载 点号运算     <br \> 
+> 调用 x.undefine <br \> 
+
+> `___setattr___` <br \> 
+> 重载 属性赋值语句     <br \> 
+> 调用 x.any = value <br \> 
+
+```python
+>>> class empty:
+...     """docstring for empty"""
+...     def __getattr__(self, attrname):
+...             if attrname == 'age':
+...                     return 40
+...             else:
+...                     raise AttributeError, attrname
+... 
+>>> X = empty()
+>>> X.age
+40
+>>> X.name
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "<stdin>", line 7, in __getattr__
+AttributeError: name
+```
+
+
+“在这里，empty类和其实例X本身并没有属性，所以对X.age的存取会转至__getattr__方法” <br \>
+
+
+
+```python
+>>> class accesscontrol:
+...     """docstring for empty"""
+...     def __setattr__(self, attr, value):
+...             if attr == 'age':
+...                     self.__dict__[attr] = value
+...             else:
+...                     raise AttributeError, attr + 'not allowed'
+... 
+>>> X = accesscontrol()
+>>> X.age
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+AttributeError: accesscontrol instance has no attribute 'age'
+>>> X.age = 40
+>>> X.age
+40
+>>> X.name = 'hello'
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "<stdin>", line 7, in __setattr__
+AttributeError: namenot allowed
+>>> 
+```
+
+“有个相关的重载方法`__setattr__`会拦截所有属性的赋值语句。如果定义了这个方法，`self.attr=value会变成self.__setattr__('attr',value)。这一点技巧性很高，因为在__setattr__中对任何self属性做赋值，都会再调用__setattr__，导致了无穷递归循环（最后就是堆栈溢出异常）。`如果想使用这个方法，要确定是通过对属性字典做索引运算来赋值任何实例属性的（下一节讨论）。也就是说，是使用`self.__dict__['name']=x，而不是self.name=x。`
+
+
 
 
 
