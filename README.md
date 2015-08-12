@@ -453,9 +453,9 @@ AttributeError: namenot allowed
 
 ------
 看完运算符重载，然后回去再看flask框架发现还是很吃力，然后百度原来flask主要是基于werkzeug封装而成的，网上回答推荐如果要了解flask框架得从三个方面
-> 1 是否对Flask的主要API都很熟悉了，是否知道一个Flask app的完整工作流程
-> 2 是否熟悉B/S这种架，是否熟悉相关网络协议（HTTP,TCP），是否清楚客户端发送请求，服务器处理响应请求的过程及其细节
-> 3 是否熟悉Python web开发的网关接口协议（WSGI）
+> 1. 是否对Flask的主要API都很熟悉了，是否知道一个Flask app的完整工作流程
+> 2. 是否熟悉B/S这种架，是否熟悉相关网络协议（HTTP,TCP），是否清楚客户端发送请求，服务器处理响应请求的过程及其细节
+> 3. 是否熟悉Python web开发的网关接口协议（WSGI）
 
 这3点在我脑海里一点印象多没有，还是一个一个慢慢解决吧，参照<a  href='http://werkzeug-docs-cn.readthedocs.org/zh_CN/latest/tutorial.html#id1'>Werkzeug指南</a>例子写了一个demo
 ```python
