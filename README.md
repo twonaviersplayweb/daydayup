@@ -449,6 +449,86 @@ AttributeError: namenot allowed
 “有个相关的重载方法`__setattr__`会拦截所有属性的赋值语句。如果定义了这个方法，`self.attr=value会变成self.__setattr__('attr',value)。这一点技巧性很高，因为在__setattr__中对任何self属性做赋值，都会再调用__setattr__，导致了无穷递归循环（最后就是堆栈溢出异常）。`如果想使用这个方法，要确定是通过对属性字典做索引运算来赋值任何实例属性的（下一节讨论）。也就是说，是使用`self.__dict__['name']=x，而不是self.name=x。`
 
 
+###8月12日 Werkzeug WSGI
+
+------
+看完运算符重载，然后回去再看flask框架发现还是很吃力，然后百度原来flask主要是基于werkzeug封装而成的，网上回答推荐如果要了解flask框架得从三个方面
+> 1 是否对Flask的主要API都很熟悉了，是否知道一个Flask app的完整工作流程
+> 2 是否熟悉B/S这种架，是否熟悉相关网络协议（HTTP,TCP），是否清楚客户端发送请求，服务器处理响应请求的过程及其细节
+> 3 是否熟悉Python web开发的网关接口协议（WSGI）
+
+这3点在我脑海里一点印象多没有，还是一个一个慢慢解决吧，参照<a  href='http://werkzeug-docs-cn.readthedocs.org/zh_CN/latest/tutorial.html#id1'>Werkzeug指南</a>例子写了一个demo
+```python
+import os
+import redis
+import urlparse
+from werkzeug.wrappers import Request, Response
+from werkzeug.routing import Map, Rule
+from werkzeug.exceptions import HTTPException, NotFound
+from werkzeug.wsgi import SharedDataMiddleware
+from werkzeug.utils import redirect
+from jinja2 import Environment, FileSystemLoader
+
+class Shortly(object):
+
+    def __init__(self, config):
+        self.redis = redis.Redis(config['redis_host'], config['redis_port'])
+
+    def dispatch_request(self, request):
+        return Response('Hello World!')
+
+    def wsgi_app(self, environ, start_response):
+        request = Request(environ)
+        response = self.dispatch_request(request)
+        return response(environ, start_response)
+
+    def __call__(self, environ, start_response):
+        return self. wsgi_app(environ, start_response)
+
+
+def create_app(redis_host='localhost', redis_port=6379, with_static=True):
+    app = Shortly({
+        'redis_host':       redis_host,
+        'redis_port':       redis_port
+    })
+    if with_static:
+        app.wsgi_app = SharedDataMiddleware(app.wsgi_app, {
+            '/static':  os.path.join(os.path.dirname(__file__), 'static')
+        })
+    return app
+    
+ if __name__ == '__main__':
+    from werkzeug.serving import run_simple
+    app = create_app()
+    run_simple('127.0.0.1', 5000, app, use_debugger=True, use_reloader=True)
+```
+发现理解起来很吃力，这还不算`redis`方面的，以及python的一些用法如`___call___`
+教程一直在强调这是一个基于WSGI的应用，WSGI是web servers gateway interface的意思，而所有的WSGI应用都遵循一定的规则例如下面的例子
+```python
+from werkzeug.wrappers import Response
+
+ def application(environ, start_response):
+    response = Response('Hello World!', mimetype='text/plain')
+    return response(environ, start_response)
+```
+但是environ， start_response 是什么我不知道，这个函数能够干什么，然后就又去看WSGI协议是个什么东东.就有去搜了一篇文章<a href='http://segmentfault.com/a/1190000003069785'>WSGI简介</a>了解到`WSGI`是一个规范定义了web服务器如何与python应用程序进行交互，文章里强调WSGI存在的意义：
+> * 让web服务器知道如何调用python应用，并把客户端的请求传递过去
+> * 让python应用程序知道客户端的请求是什么，以及如何把请求的结果返回给web服务器
+
+总之就是实现了web server端与python应用之间的交流,至于上面的environ以及start_response参数文章里也给出了解释
+######environ参数
+>environ参数是一个Python的字典，里面存放了所有和客户端相关的信息，这样application对象就能知道客户端请求的资源是什么，请求中带了什么数据等。environ字典包含了一些CGI规范要求的数据，以及WSGI规范新增的数据，还可能包含一些操作系统的环境变量以及Web服务器相关的环境变量
+
+######start_response参数
+>start_response是一个可调用对象，接收两个必选参数和一个可选参数：
+* status: 一个字符串，表示HTTP响应状态字符串
+* response_headers: 一个列表，包含有如下形式的元组：(header_name, header_value)，用来表示HTTP响应的headers
+* exc_info（可选）: 用于出错时，server需要返回给浏览器的信息
+
+好了总算稍微了解了一点WSGI，今天再回过头来看werzeug吧
+
+##<em>PS:买的<a href='http://book.douban.com/subject/6862061/'>计算机科学概论</a>应该明天到，从后天开始每天早上会花上一个小时看这本书补补基础<\em>
+
 
 
 
