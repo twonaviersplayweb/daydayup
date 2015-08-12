@@ -527,7 +527,7 @@ from werkzeug.wrappers import Response
 
 好了总算稍微了解了一点WSGI，今天再回过头来看werzeug吧
 
-##<em>PS:买的<a href='http://book.douban.com/subject/6862061/'>计算机科学概论</a>应该明天到，从后天开始每天早上会花上一个小时看这本书补补基础<\em>
+##<em>PS:买的<a href='http://book.douban.com/subject/6862061/'>计算机科学概论</a>应该明天到，从后天开始每天早上会花上一个小时看这本书补补基础</em>
 
 
 
