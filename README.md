@@ -539,11 +539,11 @@ from werkzeug.wrappers import Response
 > 3. 如何解析路由
 > 4. 数据库redis的相关方面
 > 5. 等等
+
 去看源码，发现连最简单的一个模块都看不懂什么意思
 ```python
 class module(ModuleType):
-    """Automatically import objects from the modules."""
-
+    #Automatically import objects from the modules.
     def __getattr__(self, name):
         if name in object_origins:
             module = __import__(object_origins[name], None, None, [name])
@@ -553,7 +553,6 @@ class module(ModuleType):
         elif name in attribute_modules:
             __import__('werkzeug.' + name)
         return ModuleType.__getattribute__(self, name)
-
     def __dir__(self):
         """Just show what we want to show."""
         result = list(new_module.__all__)
@@ -564,7 +563,7 @@ class module(ModuleType):
  ```
  这还只是导入模块的部分，但是我连为什么这样做不清楚，其他函数看了一下发现都是一些底层原理的实现，很多概念我都没有，这样看效果太低，挫折感太强了，我一直都是这样干的，这样肯定不会学会，我又陷入`先把所有东西都学好，再回来搞东西`这样的怪圈中了，再这样下去我估计我要看到计算是怎么一回事情了，要搞玄学了！<br\>
  
- <em>不能散开精力干这种效率很低的事情，`首要目标是先建立网站`至于底层实现，服务器原理什么的，打包机构，暂且不管以后再说<\em>
+ <em>不能散开精力干这种效率很低的事情，`首要目标是先建立网站`至于底层实现，服务器原理什么的，打包结构，暂且不管以后再说</em>
  今天会再回头看一遍我之前的flask例子，把阻止我进一步搞下去的东西再梳理一遍，以及我最终要实现什么效果再整理一下。
  
  
