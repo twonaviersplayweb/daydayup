@@ -584,7 +584,7 @@ class module(ModuleType):
 #####app.config
 `app.config配置包含哪些东西`<br/>
 例子里用到的配置就是
-* DATABASE，USERNAME， PASSWORD
+* DATABASE，USERNAME，PASSWORD
 > 这些属于自己配置不属于内部配置，必须要提前设置，例子中应用的代码
 ```python
 app = Flask(__name__)
