@@ -567,8 +567,95 @@ class module(ModuleType):
  今天会再回头看一遍我之前的flask例子，把阻止我进一步搞下去的东西再梳理一遍，以及我最终要实现什么效果再整理一下。
  
  
+ ###8月14日 flask demo梳理
+
+------
+
+回过头来看之前的疑惑，发现其实例子的里的东西，教程都有讲，只是我没有细看，还是慢慢来，我这种类型的急肯定是没用，慢慢分析，不要害怕下面针对之前的疑惑进行一次梳理
+
+######request对象
+`request 对象除了http相关信息还包含哪些信息`<br/>
+其实例子里只有了两种用法request.method，requset.form
+* method
+>通过使用 method 属性可以操作当前请求方法 就是http里面的几种操作`OPTIONS、GET、HEAD、POST、PUT、DELETE、TRACE`
+
+* form
+> form 属性就是用来处理表单数据 
+
+#####app.config
+`app.config配置包含哪些东西`<br/>
+例子里用到的配置就是
+* DATABASE，USERNAME， PASSWORD
+> 这些属于自己配置不属于内部配置，必须要提前设置，例子中应用的代码
+```python
+app = Flask(__name__)
+app.config.from_object(__name__)
+```
+from_object() 会查看给定的对象（如果该对象是一个字符串就会直接导入它），搜索对象中所有变量名均为大字字母的变量。在我们的应用中，已经将配 置写在前面了。你可以把这些配置放到一个独立的文件中。就是这么简单他会自己配置
+
+下面两个是内部配置详细的内部配置选项参见<a href='http://dormousehole.readthedocs.org/en/latest/config.html#id2'>config配置</a>
+* BEBUG
+> 开关调试模式
+
+* SECRET_KEY 
+> 密钥
+
+ #####jinja2模版的基本用法
+ 这个还没有看，主要要掌握常规用法，if， else， 参数传递， 模板模块化拼接
  
+ #####g对象
+ 莫有看
  
+ #####session对象
+ `session 是什么东东`<br/>
+  session 的对象，允许你在不同请求 之间储存信息。这个对象相当于用密钥签名加密的 cookie ，即用户可以查看你的 cookie ，但是如果没有密钥就无法修改它。
+```python
+from flask import Flask, session, redirect, url_for, escape, request
+
+app = Flask(__name__)
+
+@app.route('/')
+def index():
+    if 'username' in session:
+        return 'Logged in as %s' % escape(session['username'])
+    return 'You are not logged in'
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        session['username'] = request.form['username']
+        return redirect(url_for('index'))
+    return '''
+        <form action="" method="post">
+            <p><input type=text name=username>
+            <p><input type=submit value=Login>
+        </form>
+    '''
+
+@app.route('/logout')
+def logout():
+    # 如果会话中有用户名就删除它。
+    session.pop('username', None)
+    return redirect(url_for('index'))
+```
+
+##计算机科学概论学习
+今天稍微看了一下前面的一点，看完了绪论，刚开始看数据存储（P14）
+##### 绪论
+绪论主要讲了算法的意义，计算机的由来，以及社会意义
+* 算法
+> `算法指完成一项任务的所遵循的一系列步骤` 还说由于算法能力的局限性使之成为数学的一个研究课题，进而推动了计算机科学的发展，反正我不知道为啥
+
+* 计算机的由来
+> 从最早的巴贝奇差分机到MARK I(贝尔实验室造) 到 巨人(艾奥瓦州立大学) 到 ENIAC(宾夕法尼亚大学造) 到我大苹果机(乔布斯，沃兹尼亚克) 再到 PC (IBM)  然后就到了web的蓬勃发展，最后说到了智能手机很多人认为它的影响将超越PC，我也是这样认为的
+
+* 社会意义
+> 这边就讲得很高大上了，说是计算机科学对于现在社会的影响，对于以前的许多社会准则的挑战，这边书比较老，他说的这些话的时候，很多人确实没想到计算机科学给社会带来的影响，但对于我们这一代来说，我们应该已经习惯这一切了，不过计算机科学仍然在不停改变我们的生活，我希望自己能不止享受科技带来的一切，还能一起参与进去改变一些东西！
+
+这本书就想他所说的涵盖了广度与深度，软件，硬件，算法，语言，数据库，web，操作系统，人工智能等等不愧为概论啊
+
+
+
 
 
 
