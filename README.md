@@ -728,7 +728,152 @@ server端回复响应，然后将被请求的资源传递过去。
 只要花时去思考，多练习一定可以学会的。不要害怕即可，`有时候不明白就跳过强迫让自己知道怎么用就行了，不行就默念10遍,不理解也没关系，未来肯定有一个场景会让你明白的，继续前进就好`。
 
 
- 
+#8月17日
+
+------
+这个周末最大的最大的收获就是明白了,如果你要欺骗自己就能一直假装下去对很多事情都漠而不视,如果你不愿意这样糊里糊涂,想做一个明白人,就必须多了解自己，正视自己的行为.<br/>
+
+顺着flask教程做下去,发现以前觉得很难理解的地方,都是自己没有细心的看，稍微有一点难懂的地方就跳过去了，其实教程写的很棒，帮你把每个知识点都讲清楚了,即使没有讲原理，至少说清楚了为什么这么做，而且都给了例子.
+
+
+
+###jinja2 模版的一些用法
+
+* if
+```html
+{% if user %}
+Hello, {{ user }}!
+{% else %}
+Hello, Stranger!
+{% endif %}
+```
+
+* for
+```html
+ul>
+{% for comment in comments %}
+<li>{{ comment }}</li> {% endfor %}
+</ul>
+```
+* 宏类似函数
+```html
+{% macro render_comment(comment) %} <li>{{ comment }}</li>
+{% endmacro %}
+<ul>
+{% for comment in comments %}
+{{ render_comment(comment) }} {% endfor %}
+</ul>
+```
+* 引用
+```html
+{% import 'macros.html' as macros %} <ul>
+{% for comment in comments %}
+{{ macros.render_comment(comment) }}
+{% endfor %} </ul>
+```
+* 最强大的地方－继承
+```html
+{% extends "base.html" %}
+{% block title %}
+	Flasky
+{% endblock %}
+{% block page_content %}
+	<div class="page-header">
+		<h1>Hello, {{ name }}!</h1>
+	</div>	
+{% endblock %}
+```
+利用extends可以任意拼接组合html页面简直就是变形金刚啊,还有flask-bootstrap可以用，妈妈再也不用担心我的前端代码了，这个暂且没有去学只是去看看,看了又要消耗精力了，只是简单的实现一下。<br/>
+
+#####自定义出错情况下的页面，404， 500
+```python
+@app.errorhandler(404)
+     def page_not_found(e):
+         return render_template('404.html'), 404
+     @app.errorhandler(500)
+     def internal_server_error(e):
+         return render_template('500.html'), 500```
+
+#####WEB表单
+这里主要讲了，表单的处理，创建表单，渲染表单，还有一些小技巧，重定向，flash信息<br/>
+表单这里主要是应用了`flask－wtf`这个模块，依据表单的类型构造不通的表单类，如下面的代码就是构造了文本字段以及提交按钮
+```python
+from flask.ext.wtf import Form
+from wtforms import StringField, SubmitField from wtforms.validators import Required
+
+class NameForm(Form):
+	#文本字段
+	name = StringField('What is your name?', validators=[Required()]) 
+	#提交按钮
+	submit = SubmitField('Submit')
+```
+这是光构造，还需要渲染，wtf.quick_form() 函数的参数为 Flask-WTF 表单对象,使用 Bootstrap 的默认 样式渲染传入的表单。
+
+```html
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block title %}Flasky{% endblock %}
+{% block page_content %} <div class="page-header">
+<h1>Hello, {% if name %}{{ name }}{% else %}Stranger{% endif %}!</h1> </div>
+{{ wtf.quick_form(form) }} {% endblock %}
+```
+然后就说处理表单了，下面的例子讲的是当http请求为post时，会话会把上一次输入的name保存在session这个字典中。
+```python
+from flask import Flask, render_template, session, redirect, url_for
+     @app.route('/', methods=['GET', 'POST'])
+     def index():
+         form = NameForm()
+         if form.validate_on_submit():
+             session['name'] = form.name.data
+             return redirect(url_for('index'))
+         return render_template('index.html', form=form, name=session.get('name'))
+```
+session
+>程序可以把数据存储在用户会话中,在请求之间“记住”数据。用户会话是一种私有存 储,存在于每个连接到服务器的客户端中。我们在第 2 章介绍过用户会话,它是请求上下 文中的变量,名为 session,像标准的 Python 字典一样操作
+
+flash函数主要用来提示用户，输入信息有变化，例如提交的用户名不对，邮件格式不对
+```python
+from flask import Flask, render_template, session, redirect, url_for, flash
+     @app.route('/', methods=['GET', 'POST'])
+     def index():
+         form = NameForm()
+         if form.validate_on_submit():
+             old_name = session.get('name')
+             if old_name is not None and old_name != form.name.data:
+flash('Looks like you have changed your name!') session['name'] = form.name.data
+return redirect(url_for('index'))
+         return render_template('index.html',
+             form = form, name = session.get('name'))
+```
+同样这样也只是构建好，仍然还需要渲染Flask 把 get_flashed_ messages() 函数开放给模板,用来获取并渲染消息
+```html
+{% block content %} 
+<div class="container">
+    {% for message in get_flashed_messages() %} 
+    <div class="alert alert-warning">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        {{ message }}
+    </div>
+    {% endfor %}
+    {% block page_content %}{% endblock %} 
+</div>
+{% endblock %}
+```
+
+
+#计算机科学概论
+
+------
+主要学习了二进制部分（P46）
+
+因为二进制的特殊性，讲了整数，浮点数，二进制的加法，减法，数据压缩，数据效验
+
+* 整数
+> 整数部分，主要就是二进制如何表示正负，二进制表示数据都是有精度的，都只能用规定的字节数，例如一个4位，0110，左边第一位是正负位0代表非负数，1代表负数，0110即代表6
+
+* 加法
+> 加法部分主要就是补码计算，以及益出问题
+
  
  
  
